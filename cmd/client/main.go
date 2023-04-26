@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println("start client")
+	fmt.Println("[Client] start")
 
 	conn, err := net.Dial("tcp", "127.0.0.1:8081")
 	if err != nil {
@@ -15,8 +15,12 @@ func main() {
 		return
 	}
 
+	id := 0
 	for {
-		msg := []byte("hi, this is gozinx...")
+		// msg := []byte("hi, this is gozinx...")
+		msg := []byte(fmt.Sprintf("hi %v, this is gozinx", id))
+		id++
+
 		_, err := conn.Write(msg)
 		if err != nil {
 			fmt.Println("[Client] failed to write msg: ", err)
