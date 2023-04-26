@@ -17,18 +17,20 @@ type Connection struct {
 	// 当前链接的状态，是否已经关闭
 	IsClose bool
 	// 与当前链接所绑定的处理业务的函数
-	Handle gzinterface.HandleFunc
+	// Handle gzinterface.HandleFunc
 	// 等待链接退出的channel
 	ExitChan chan []byte
+	Router   gzinterface.IRouter
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, handle gzinterface.HandleFunc) *Connection {
+func NewConnection(conn *net.TCPConn, connID uint32, r gzinterface.IRouter) *Connection {
 	return &Connection{
-		Conn:     conn,
-		ConnID:   connID,
-		IsClose:  false,
-		Handle:   handle,
+		Conn:    conn,
+		ConnID:  connID,
+		IsClose: false,
+		// Handle:   handle,
 		ExitChan: make(chan []byte, 1),
+		Router:   r,
 	}
 }
 
@@ -74,16 +76,31 @@ func (c *Connection) Start() {
 		}
 		fmt.Printf("read from connection success, and msg: %s\n", string(buf[:cnt]))
 
-		if err = c.Handle(c.Conn, buf, cnt); err != nil {
-			fmt.Printf("ConnID %v handle is error\n", c.ConnID)
-			break
+		// 交给Router处理
+		// if err = c.Handle(c.Conn, buf, cnt); err != nil {
+		// 	fmt.Printf("ConnID %v handle is error\n", c.ConnID)
+		// 	break
+		// }
+
+		// 这里有必要开goroutine？
+		req := Request{
+			Conn: c,
+			Data: buf,
 		}
+		c.Router.PreHandle(&req)
+		c.Router.Handle(&req)
+		c.Router.PostHandle(&req)
+
 	}
 
 }
 
 func (c *Connection) Stop() {
 
+}
+
+func (c *Connection) GetConn() *net.TCPConn {
+	return c.Conn
 }
 
 func (c *Connection) GetConnID() uint32 {

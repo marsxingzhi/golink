@@ -17,6 +17,8 @@ type Server struct {
 	IP string
 	// 服务器绑定的端口
 	Port int
+
+	Router gzinterface.IRouter
 }
 
 func New(name, ip string, port int) gzinterface.IServer {
@@ -29,15 +31,16 @@ func New(name, ip string, port int) gzinterface.IServer {
 	}
 }
 
-var handle gzinterface.HandleFunc = func(tcpConn *net.TCPConn, buf []byte, cnt int) error {
-	newBuf := buf[:cnt]
-	newBuf = append(newBuf, ", and back from server"...)
-	_, err := tcpConn.Write(newBuf)
-	if err != nil {
-		fmt.Println("failed to write back to connection: ", err)
-	}
-	return err
-}
+// 由于使用了Router，处理逻辑交给Router
+// var handle gzinterface.HandleFunc = func(tcpConn *net.TCPConn, buf []byte, cnt int) error {
+// 	newBuf := buf[:cnt]
+// 	newBuf = append(newBuf, ", and back from server"...)
+// 	_, err := tcpConn.Write(newBuf)
+// 	if err != nil {
+// 		fmt.Println("failed to write back to connection: ", err)
+// 	}
+// 	return err
+// }
 
 func (s *Server) Start() {
 	fmt.Println("server.Start...")
@@ -72,7 +75,7 @@ func (s *Server) Start() {
 		// @xingzhi 思考为什么处理业务不应该放在这个for循环中，而是另开一个goroutine
 		// go handleConnection(conn)
 
-		c := NewConnection(conn, connID, handle)
+		c := NewConnection(conn, connID, s.Router)
 		connID++
 		go c.Start()
 	}
@@ -108,4 +111,8 @@ func (s *Server) Serve() {
 
 	// 阻塞
 	select {}
+}
+
+func (s *Server) AddRouter(r gzinterface.IRouter) {
+	s.Router = r
 }
