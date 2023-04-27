@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/marsxingzhi/gozinx/config"
 	"github.com/marsxingzhi/gozinx/gzinterface"
 	"github.com/marsxingzhi/gozinx/gznet"
 )
@@ -26,6 +27,9 @@ func (pr *PingRouter) PostHandle(req gzinterface.IRequest) {
 }
 
 func main() {
+
+	// 初始化配置
+	config.Init()
 
 	// 1. 创建server
 	server := gznet.New("t1", "127.0.0.1", 8081)

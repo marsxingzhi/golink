@@ -1,0 +1,8 @@
+{
+	"name":"gozinx server application",
+	"host":"127.0.0.1",
+	"port":8081,
+	"max_connection": 1001,
+	"max_package_size": 1025,
+	"vsersion":"0.2"
+}
