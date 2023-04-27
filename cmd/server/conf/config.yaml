@@ -1,0 +1,7 @@
+server:
+  name: gozinx server application by yaml
+  host: 127.0.0.1
+  port: 8081
+  max_connection: 1002
+  max_package_size: 1026
+  version: 0.3
