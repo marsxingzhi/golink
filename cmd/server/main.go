@@ -13,17 +13,25 @@ type PingRouter struct {
 }
 
 func (pr *PingRouter) PreHandle(req gzinterface.IRequest) {
-	fmt.Println("call PreHandle")
+	// fmt.Println("call PreHandle")
 }
 
 func (pr *PingRouter) Handle(req gzinterface.IRequest) {
-	fmt.Println("call Handle")
+	fmt.Println("call Handle...")
 
-	req.GetConnection().GetConn().Write([]byte("ping...\n"))
+	// req.GetConnection().GetConn().Write([]byte("ping...\n"))
+
+	// 先读取客户端的数据，再回写ping数据
+	fmt.Printf("[Server] receive msg | msgID: %v, dataLen: %v, data: %v\n", req.GetMsgID(), len(req.GetData()), string(req.GetData()))
+
+	if err := req.GetConnection().SendMessage(1, []byte("ping...\n")); err != nil {
+		fmt.Printf("[Server] | failed to sendMessage: %v\n", err)
+		return
+	}
 }
 
 func (pr *PingRouter) PostHandle(req gzinterface.IRequest) {
-	fmt.Println("call PostHandle")
+	// fmt.Println("call PostHandle")
 }
 
 func main() {

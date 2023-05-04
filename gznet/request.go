@@ -1,11 +1,16 @@
 package gznet
 
-import "github.com/marsxingzhi/gozinx/gzinterface"
+import (
+	"github.com/marsxingzhi/gozinx/gzinterface"
+	"github.com/marsxingzhi/gozinx/model"
+)
 
 // 链接与数据的封装
 type Request struct {
 	Conn gzinterface.IConnection
-	Data []byte
+	// Data []byte
+	// 将Data封装到Message中
+	Msg *model.Message
 }
 
 func (req *Request) GetConnection() gzinterface.IConnection {
@@ -13,5 +18,9 @@ func (req *Request) GetConnection() gzinterface.IConnection {
 }
 
 func (req *Request) GetData() []byte {
-	return req.Data
+	return req.Msg.Data
+}
+
+func (req *Request) GetMsgID() uint32 {
+	return req.Msg.MsgID
 }

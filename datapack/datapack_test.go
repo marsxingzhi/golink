@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/marsxingzhi/gozinx/config"
-	"github.com/marsxingzhi/gozinx/gznet"
+	"github.com/marsxingzhi/gozinx/model"
 )
 
 func TestDataPack(t *testing.T) {
@@ -73,7 +73,7 @@ func TestDataPack(t *testing.T) {
 		dp := New()
 
 		// 模拟粘包过程，封装两个message，一起发送
-		msg1 := &gznet.Message{
+		msg1 := &model.Message{
 			MsgID:   1,
 			DataLen: 5,
 			Data:    []byte{'1', '2', '3', '4', '5'},
@@ -84,7 +84,7 @@ func TestDataPack(t *testing.T) {
 			return
 		}
 
-		msg2 := &gznet.Message{
+		msg2 := &model.Message{
 			MsgID:   2,
 			DataLen: 6,
 			Data:    []byte{'a', 'b', 'c', 'd', 'e', 'f'},

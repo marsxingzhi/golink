@@ -15,7 +15,7 @@ type IConnection interface {
 	// 获取客户端链接的地址和端口
 	RemoteAddr() net.Addr
 	// 发送数据
-	Send()
+	SendMessage(msgID uint32, data []byte) error
 }
 
 // 函数类型

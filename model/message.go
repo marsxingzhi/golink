@@ -1,4 +1,4 @@
-package gznet
+package model
 
 // 定义消息结构
 type Message struct {

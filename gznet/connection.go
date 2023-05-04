@@ -6,7 +6,9 @@ import (
 	"io"
 	"net"
 
+	"github.com/marsxingzhi/gozinx/datapack"
 	"github.com/marsxingzhi/gozinx/gzinterface"
+	"github.com/marsxingzhi/gozinx/model"
 )
 
 // conn对象
@@ -64,17 +66,41 @@ func (c *Connection) Start() {
 	}()
 
 	for {
-		buf := make([]byte, 1024)
-		cnt, err := c.Conn.Read(buf)
+		// buf := make([]byte, 1024)
+		// cnt, err := c.Conn.Read(buf)
+		// if err != nil {
+		// 	if errors.Is(err, io.EOF) {
+		// 		fmt.Println("end of data")
+		// 		break
+		// 	}
+		// 	fmt.Println("failed to read from connection: ", err)
+		// 	continue
+		// }
+		// fmt.Printf("read from connection success, and msg: %s\n", string(buf[:cnt]))
+
+		// 上述代码注释掉，这里使用拆包的方式
+		dp := datapack.New()
+		// 1. 先读取head，获取到消息长度
+		headData := make([]byte, dp.GetHeadLen())
+		if _, err := io.ReadFull(c.Conn, headData); err != nil {
+			fmt.Printf("[Connection] Start | failed to read msg head: %v\n", err)
+			break
+		}
+		msg, err := dp.UnPack(headData)
 		if err != nil {
-			if errors.Is(err, io.EOF) {
-				fmt.Println("end of data")
+			fmt.Printf("[Connection] Satrt | failed to UnPack: %v\n", err)
+			break
+		}
+
+		// 2. 根据消息长度，读取消息内容
+		if msg.DataLen > 0 {
+			msg.Data = make([]byte, msg.DataLen)
+
+			if _, err = io.ReadFull(c.Conn, msg.Data); err != nil {
+				fmt.Printf("[Connection] Start | failed to readfull msg data: %v\n", err)
 				break
 			}
-			fmt.Println("failed to read from connection: ", err)
-			continue
 		}
-		fmt.Printf("read from connection success, and msg: %s\n", string(buf[:cnt]))
 
 		// 交给Router处理
 		// if err = c.Handle(c.Conn, buf, cnt); err != nil {
@@ -85,7 +111,7 @@ func (c *Connection) Start() {
 		// 这里有必要开goroutine？
 		req := Request{
 			Conn: c,
-			Data: buf,
+			Msg:  msg,
 		}
 		c.Router.PreHandle(&req)
 		c.Router.Handle(&req)
@@ -111,6 +137,30 @@ func (c *Connection) RemoteAddr() net.Addr {
 	return c.Conn.RemoteAddr()
 }
 
-func (c *Connection) Send() {
+// SendMessage 先封包，再发送
+func (c *Connection) SendMessage(msgID uint32, data []byte) error {
+	if c.IsClose {
+		fmt.Println("[Connection] SendMessage | connection has be closed")
+		return errors.New("[Connection] SendMessage | connection has be closed")
+	}
 
+	dp := datapack.New()
+
+	msg := &model.Message{
+		MsgID:   msgID,
+		DataLen: uint32(len(data)),
+		Data:    data,
+	}
+
+	sendData, err := dp.Pack(msg)
+	if err != nil {
+		fmt.Printf("[Connection] SendMessage | failed to Pack msg: %v\n", err)
+		return err
+	}
+	// 将数据写回客户端
+	if _, err = c.Conn.Write(sendData); err != nil {
+		fmt.Printf("[Connection] SendMessage | failed to Write msg: %v\n", err)
+		return err
+	}
+	return nil
 }

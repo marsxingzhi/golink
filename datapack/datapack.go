@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/marsxingzhi/gozinx/config"
-	"github.com/marsxingzhi/gozinx/gznet"
+	"github.com/marsxingzhi/gozinx/model"
 )
 
 // 封包、拆包逻辑
@@ -18,9 +18,9 @@ type IDataPack interface {
 	// 获取包头长度
 	GetHeadLen() uint32
 	// 封包
-	Pack(msg gznet.Message) ([]byte, error)
+	Pack(msg model.Message) ([]byte, error)
 	// 拆包
-	UnPack(b []byte) (gznet.Message, error)
+	UnPack(b []byte) (model.Message, error)
 }
 
 type DataPack struct {
@@ -35,7 +35,7 @@ func (dp *DataPack) GetHeadLen() uint32 {
 	return 8
 }
 
-func (dp *DataPack) Pack(msg *gznet.Message) ([]byte, error) {
+func (dp *DataPack) Pack(msg *model.Message) ([]byte, error) {
 	buffer := bytes.NewBuffer([]byte{})
 
 	// 1. 写入消息长度 写入二进制数据
@@ -59,10 +59,10 @@ func (dp *DataPack) Pack(msg *gznet.Message) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-func (dp *DataPack) UnPack(b []byte) (*gznet.Message, error) {
+func (dp *DataPack) UnPack(b []byte) (*model.Message, error) {
 	// 1. 先读取head
 	reader := bytes.NewReader(b)
-	var msg gznet.Message
+	var msg model.Message
 	// 这里不是读取全部，只是读取长度
 	err := binary.Read(reader, binary.LittleEndian, &msg.DataLen)
 	if err != nil {
