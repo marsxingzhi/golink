@@ -33,12 +33,16 @@ type ServerConfig struct {
 
 var GzConfig *Config
 
+func (gc *Config) GetMaxPackageSize() int32 {
+	return gc.Server.MaxPackageSize
+}
+
 // 初始化配置
 func Init() {
 	// 默认配置
 	defaultConfig()
 	// 加载配置
-	loadConfig()
+	// loadConfig()
 }
 
 func loadConfig() {
