@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/marsxingzhi/gozinx/gzinterface"
+	"github.com/marsxingzhi/gozinx/handler"
 )
 
 // IServer接口的实现
@@ -18,16 +19,18 @@ type Server struct {
 	// 服务器绑定的端口
 	Port int
 
-	Router gzinterface.IRouter
+	// Router gzinterface.IRouter
+	MsgHandler handler.IMsghandler
 }
 
 func New(name, ip string, port int) gzinterface.IServer {
 	fmt.Println("server.New...")
 	return &Server{
-		Name:      name,
-		IPVersion: "tcp4",
-		IP:        ip,
-		Port:      port,
+		Name:       name,
+		IPVersion:  "tcp4",
+		IP:         ip,
+		Port:       port,
+		MsgHandler: handler.New(),
 	}
 }
 
@@ -75,7 +78,7 @@ func (s *Server) Start() {
 		// @xingzhi 思考为什么处理业务不应该放在这个for循环中，而是另开一个goroutine
 		// go handleConnection(conn)
 
-		c := NewConnection(conn, connID, s.Router)
+		c := NewConnection(conn, connID, s.MsgHandler)
 		connID++
 		go c.Start()
 	}
@@ -113,6 +116,6 @@ func (s *Server) Serve() {
 	select {}
 }
 
-func (s *Server) AddRouter(r gzinterface.IRouter) {
-	s.Router = r
+func (s *Server) AddRouter(msgID uint32, r gzinterface.IRouter) {
+	s.MsgHandler.AddRouter(msgID, r)
 }

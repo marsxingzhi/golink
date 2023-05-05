@@ -7,7 +7,7 @@ import (
 	"net"
 
 	"github.com/marsxingzhi/gozinx/datapack"
-	"github.com/marsxingzhi/gozinx/gzinterface"
+	"github.com/marsxingzhi/gozinx/handler"
 	"github.com/marsxingzhi/gozinx/model"
 )
 
@@ -22,17 +22,17 @@ type Connection struct {
 	// Handle gzinterface.HandleFunc
 	// 等待链接退出的channel
 	ExitChan chan []byte
-	Router   gzinterface.IRouter
+
+	MsgHandler handler.IMsghandler
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, r gzinterface.IRouter) *Connection {
+func NewConnection(conn *net.TCPConn, connID uint32, msgHandler handler.IMsghandler) *Connection {
 	return &Connection{
-		Conn:    conn,
-		ConnID:  connID,
-		IsClose: false,
-		// Handle:   handle,
-		ExitChan: make(chan []byte, 1),
-		Router:   r,
+		Conn:       conn,
+		ConnID:     connID,
+		IsClose:    false,
+		ExitChan:   make(chan []byte, 1),
+		MsgHandler: msgHandler,
 	}
 }
 
@@ -113,9 +113,10 @@ func (c *Connection) Start() {
 			Conn: c,
 			Msg:  msg,
 		}
-		c.Router.PreHandle(&req)
-		c.Router.Handle(&req)
-		c.Router.PostHandle(&req)
+		// c.Router.PreHandle(&req)
+		// c.Router.Handle(&req)
+		// c.Router.PostHandle(&req)
+		go c.MsgHandler.DoHandle(&req) // 可以开个goroutine，将处理request的逻辑go出去，然后继续读新的数据
 
 	}
 
