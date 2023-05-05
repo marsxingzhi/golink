@@ -21,9 +21,12 @@ type Connection struct {
 	// 与当前链接所绑定的处理业务的函数
 	// Handle gzinterface.HandleFunc
 	// 等待链接退出的channel
-	ExitChan chan []byte
+	ExitChan chan bool
 
 	MsgHandler handler.IMsghandler
+
+	// 无缓冲，读写分离，Reader与Writer通信
+	MsgChan chan []byte
 }
 
 func NewConnection(conn *net.TCPConn, connID uint32, msgHandler handler.IMsghandler) *Connection {
@@ -31,99 +34,31 @@ func NewConnection(conn *net.TCPConn, connID uint32, msgHandler handler.IMsghand
 		Conn:       conn,
 		ConnID:     connID,
 		IsClose:    false,
-		ExitChan:   make(chan []byte, 1),
+		ExitChan:   make(chan bool, 1),
 		MsgHandler: msgHandler,
+		MsgChan:    make(chan []byte),
 	}
 }
 
 // 需要开启goroutine
 func (c *Connection) Start() {
-	// defer conn.Close()
-	// buf := make([]byte, 1024)
-	// cnt, err := conn.Read(buf)
-	// if err != nil {
-	// 	fmt.Println("[server] failed to read from connection: ", err)
-	// 	return
-	// }
-
-	// fmt.Printf("[server] read data from connection: %s\n", string(buf))
-
-	// // test 回写到端上
-	// _, err = conn.Write(buf[:cnt])
-	// if err != nil {
-	// 	fmt.Println("[server] failed to write back to connection: ", err)
-	// 	return
-	// }
-
-	fmt.Println("connection start...")
-
-	// defer fmt.Printf("connection closed, and ConnID: %v, remote addr is %s\n", c.ConnID, c.RemoteAddr())
-	// defer c.Stop()
-
-	defer func() {
-		c.Stop()
-		fmt.Printf("connection closed, and ConnID: %v, remote addr is %s\n", c.ConnID, c.RemoteAddr())
-	}()
-
-	for {
-		// buf := make([]byte, 1024)
-		// cnt, err := c.Conn.Read(buf)
-		// if err != nil {
-		// 	if errors.Is(err, io.EOF) {
-		// 		fmt.Println("end of data")
-		// 		break
-		// 	}
-		// 	fmt.Println("failed to read from connection: ", err)
-		// 	continue
-		// }
-		// fmt.Printf("read from connection success, and msg: %s\n", string(buf[:cnt]))
-
-		// 上述代码注释掉，这里使用拆包的方式
-		dp := datapack.New()
-		// 1. 先读取head，获取到消息长度
-		headData := make([]byte, dp.GetHeadLen())
-		if _, err := io.ReadFull(c.Conn, headData); err != nil {
-			fmt.Printf("[Connection] Start | failed to read msg head: %v\n", err)
-			break
-		}
-		msg, err := dp.UnPack(headData)
-		if err != nil {
-			fmt.Printf("[Connection] Satrt | failed to UnPack: %v\n", err)
-			break
-		}
-
-		// 2. 根据消息长度，读取消息内容
-		if msg.DataLen > 0 {
-			msg.Data = make([]byte, msg.DataLen)
-
-			if _, err = io.ReadFull(c.Conn, msg.Data); err != nil {
-				fmt.Printf("[Connection] Start | failed to readfull msg data: %v\n", err)
-				break
-			}
-		}
-
-		// 交给Router处理
-		// if err = c.Handle(c.Conn, buf, cnt); err != nil {
-		// 	fmt.Printf("ConnID %v handle is error\n", c.ConnID)
-		// 	break
-		// }
-
-		// 这里有必要开goroutine？
-		req := Request{
-			Conn: c,
-			Msg:  msg,
-		}
-		// c.Router.PreHandle(&req)
-		// c.Router.Handle(&req)
-		// c.Router.PostHandle(&req)
-		go c.MsgHandler.DoHandle(&req) // 可以开个goroutine，将处理request的逻辑go出去，然后继续读新的数据
-
-	}
-
+	go c.StartRead()
+	go c.StartWrite()
 }
 
 func (c *Connection) Stop() {
+	if c.IsClose {
+		return
+	}
 
+	c.IsClose = true
+	c.Conn.Close()
+
+	c.ExitChan <- true
+
+	// 回收资源
+	close(c.MsgChan)
+	close(c.ExitChan)
 }
 
 func (c *Connection) GetConn() *net.TCPConn {
@@ -159,9 +94,115 @@ func (c *Connection) SendMessage(msgID uint32, data []byte) error {
 		return err
 	}
 	// 将数据写回客户端
-	if _, err = c.Conn.Write(sendData); err != nil {
-		fmt.Printf("[Connection] SendMessage | failed to Write msg: %v\n", err)
-		return err
-	}
+	// if _, err = c.Conn.Write(sendData); err != nil {
+	// 	fmt.Printf("[Connection] SendMessage | failed to Write msg: %v\n", err)
+	// 	return err
+	// }
+
+	// 这里就不是直接将数据写回客户端，而是写到channel中，由专门的Writer负责回写
+	c.MsgChan <- sendData
+
 	return nil
+}
+
+func (c *Connection) StartRead() {
+	// defer conn.Close()
+	// buf := make([]byte, 1024)
+	// cnt, err := conn.Read(buf)
+	// if err != nil {
+	// 	fmt.Println("[server] failed to read from connection: ", err)
+	// 	return
+	// }
+
+	// fmt.Printf("[server] read data from connection: %s\n", string(buf))
+
+	// // test 回写到端上
+	// _, err = conn.Write(buf[:cnt])
+	// if err != nil {
+	// 	fmt.Println("[server] failed to write back to connection: ", err)
+	// 	return
+	// }
+
+	fmt.Println("[Connection] StartRead...")
+
+	// defer fmt.Printf("connection closed, and ConnID: %v, remote addr is %s\n", c.ConnID, c.RemoteAddr())
+	// defer c.Stop()
+
+	defer func() {
+		c.Stop()
+		fmt.Printf("[Connection] closed, and ConnID: %v, remote addr is %s\n", c.ConnID, c.RemoteAddr())
+	}()
+
+	for {
+		// buf := make([]byte, 1024)
+		// cnt, err := c.Conn.Read(buf)
+		// if err != nil {
+		// 	if errors.Is(err, io.EOF) {
+		// 		fmt.Println("end of data")
+		// 		break
+		// 	}
+		// 	fmt.Println("failed to read from connection: ", err)
+		// 	continue
+		// }
+		// fmt.Printf("read from connection success, and msg: %s\n", string(buf[:cnt]))
+
+		// 上述代码注释掉，这里使用拆包的方式
+		dp := datapack.New()
+		// 1. 先读取head，获取到消息长度
+		headData := make([]byte, dp.GetHeadLen())
+		if _, err := io.ReadFull(c.Conn, headData); err != nil {
+			fmt.Printf("[Connection] StartRead | failed to read msg head: %v\n", err)
+			break
+		}
+		msg, err := dp.UnPack(headData)
+		if err != nil {
+			fmt.Printf("[Connection] StartRead | failed to UnPack: %v\n", err)
+			break
+		}
+
+		// 2. 根据消息长度，读取消息内容
+		if msg.DataLen > 0 {
+			msg.Data = make([]byte, msg.DataLen)
+
+			if _, err = io.ReadFull(c.Conn, msg.Data); err != nil {
+				fmt.Printf("[Connection] StartRead | failed to readfull msg data: %v\n", err)
+				break
+			}
+		}
+
+		// 交给Router处理
+		// if err = c.Handle(c.Conn, buf, cnt); err != nil {
+		// 	fmt.Printf("ConnID %v handle is error\n", c.ConnID)
+		// 	break
+		// }
+
+		// 这里有必要开goroutine？
+		req := Request{
+			Conn: c,
+			Msg:  msg,
+		}
+		// c.Router.PreHandle(&req)
+		// c.Router.Handle(&req)
+		// c.Router.PostHandle(&req)
+		go c.MsgHandler.DoHandle(&req) // 可以开个goroutine，将处理request的逻辑go出去，然后继续读新的数据
+
+	}
+}
+
+// StartWrite 是Writer往客户端写数据的逻辑。需要go
+// 不要传参数，用channel可以解耦
+func (c *Connection) StartWrite() {
+	fmt.Println("[Connection] StartWrite...")
+
+	for {
+		select {
+		case data := <-c.MsgChan: // 收到Reader给的数据
+			if _, err := c.Conn.Write(data); err != nil {
+				fmt.Printf("[Connection] StartWrite | failed to Write msg back to client: %v\n", err)
+			}
+
+		case <-c.ExitChan: // 收到Reader给的退出信号
+			return
+		}
+	}
 }
