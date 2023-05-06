@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/marsxingzhi/gozinx/config"
-	"github.com/marsxingzhi/gozinx/gzinterface"
-	"github.com/marsxingzhi/gozinx/gznet"
+	"github.com/marsxingzhi/golink/config"
+	"github.com/marsxingzhi/golink/gzinterface"
+	"github.com/marsxingzhi/golink/gznet"
 )
 
 type PingRouter struct {

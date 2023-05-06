@@ -7,10 +7,10 @@ import (
 	"net"
 	"sync"
 
-	"github.com/marsxingzhi/gozinx/datapack"
-	"github.com/marsxingzhi/gozinx/gzinterface"
-	"github.com/marsxingzhi/gozinx/handler"
-	"github.com/marsxingzhi/gozinx/model"
+	"github.com/marsxingzhi/golink/datapack"
+	"github.com/marsxingzhi/golink/gzinterface"
+	"github.com/marsxingzhi/golink/handler"
+	"github.com/marsxingzhi/golink/model"
 )
 
 // conn对象

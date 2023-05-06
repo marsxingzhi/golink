@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/marsxingzhi/gozinx/gzinterface"
+	"github.com/marsxingzhi/golink/gzinterface"
 	"gopkg.in/yaml.v3"
 )
 
@@ -23,7 +23,7 @@ type ServerConfig struct {
 	// 端口号
 	Port int `yaml:"port"`
 
-	// gozinx框架的版本号
+	// golink框架的版本号
 	Version string `yaml:"version"`
 	// 最大连接数
 	MaxConn int `yaml:"max_connection"`
@@ -63,25 +63,25 @@ func Init() {
 
 func loadConfig() {
 	// TODO 先写死
-	bytes, err := ioutil.ReadFile("/Users/geyan/codes/gozinx/cmd/server/conf/config.yaml")
+	bytes, err := ioutil.ReadFile("/Users/geyan/codes/golink/cmd/server/conf/config.yaml")
 	fmt.Printf("loadConfig data: %s\n", string(bytes))
 
 	if err != nil {
-		fmt.Printf("[gozinx] failed to load config: %+v\n", err)
-		panic("[gozinx] failed to load config")
+		fmt.Printf("[golink] failed to load config: %+v\n", err)
+		panic("[golink] failed to load config")
 	}
 	if err = yaml.Unmarshal(bytes, &GzConfig); err != nil {
-		fmt.Printf("[gozinx] failed to unmarshal gzinx.json: %+v\n", err)
-		panic("[gozinx] failed to unmarshal gzinx.json")
+		fmt.Printf("[golink] failed to unmarshal gzinx.json: %+v\n", err)
+		panic("[golink] failed to unmarshal gzinx.json")
 	}
 
-	fmt.Printf("[gozinx] load config success, and config: %+v\n", GzConfig)
+	fmt.Printf("[golink] load config success, and config: %+v\n", GzConfig)
 }
 
 func defaultConfig() {
 
 	sc := ServerConfig{
-		Name:                  "gozinx server app",
+		Name:                  "golink server app",
 		Host:                  "0.0.0.0",
 		Port:                  80811,
 		Version:               "0.1",

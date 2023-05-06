@@ -6,8 +6,8 @@ import (
 	"net"
 	"testing"
 
-	"github.com/marsxingzhi/gozinx/config"
-	"github.com/marsxingzhi/gozinx/model"
+	"github.com/marsxingzhi/golink/config"
+	"github.com/marsxingzhi/golink/model"
 )
 
 func TestDataPack(t *testing.T) {

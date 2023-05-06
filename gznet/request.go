@@ -1,8 +1,8 @@
 package gznet
 
 import (
-	"github.com/marsxingzhi/gozinx/gzinterface"
-	"github.com/marsxingzhi/gozinx/model"
+	"github.com/marsxingzhi/golink/gzinterface"
+	"github.com/marsxingzhi/golink/model"
 )
 
 // 链接与数据的封装

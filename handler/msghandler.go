@@ -3,8 +3,8 @@ package handler
 import (
 	"fmt"
 
-	"github.com/marsxingzhi/gozinx/config"
-	"github.com/marsxingzhi/gozinx/gzinterface"
+	"github.com/marsxingzhi/golink/config"
+	"github.com/marsxingzhi/golink/gzinterface"
 )
 
 // 消息管理模块

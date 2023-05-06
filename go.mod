@@ -1,4 +1,4 @@
-module github.com/marsxingzhi/gozinx
+module github.com/marsxingzhi/golink
 
 go 1.18
 

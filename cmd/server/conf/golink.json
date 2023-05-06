@@ -1,5 +1,5 @@
 {
-	"name":"gozinx server application",
+	"name":"golink server application",
 	"host":"127.0.0.1",
 	"port":8081,
 	"max_connection": 1001,

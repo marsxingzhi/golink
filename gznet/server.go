@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/marsxingzhi/gozinx/config"
-	"github.com/marsxingzhi/gozinx/gzinterface"
-	"github.com/marsxingzhi/gozinx/handler"
+	"github.com/marsxingzhi/golink/config"
+	"github.com/marsxingzhi/golink/gzinterface"
+	"github.com/marsxingzhi/golink/handler"
 )
 
 // IServer接口的实现
@@ -75,7 +75,7 @@ func (s *Server) Start() {
 		return
 	}
 
-	fmt.Printf("start gozinx server %s success, and now listenning...\n", s.Name)
+	fmt.Printf("start golink server %s success, and now listenning...\n", s.Name)
 
 	var connID uint32 = 0
 
