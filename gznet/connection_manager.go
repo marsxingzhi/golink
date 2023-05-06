@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/marsxingzhi/gozinx/gzinterface"
+	"github.com/marsxingzhi/golink/gzinterface"
 )
 
 type ConnectionManager struct {

@@ -1,6 +1,6 @@
 package gznet
 
-import "github.com/marsxingzhi/gozinx/gzinterface"
+import "github.com/marsxingzhi/golink/gzinterface"
 
 type BaseRouter struct {
 }

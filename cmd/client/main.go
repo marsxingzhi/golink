@@ -6,9 +6,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/marsxingzhi/gozinx/config"
-	"github.com/marsxingzhi/gozinx/datapack"
-	"github.com/marsxingzhi/gozinx/model"
+	"github.com/marsxingzhi/golink/config"
+	"github.com/marsxingzhi/golink/datapack"
+	"github.com/marsxingzhi/golink/model"
 )
 
 func main() {
@@ -26,8 +26,8 @@ func main() {
 
 	// id := 0
 	for {
-		// msg := []byte("hi, this is gozinx...")
-		// msg := []byte(fmt.Sprintf("hi %v, this is gozinx", id))
+		// msg := []byte("hi, this is golink...")
+		// msg := []byte(fmt.Sprintf("hi %v, this is golink", id))
 		// id++
 
 		// _, err := conn.Write(msg)
@@ -47,7 +47,7 @@ func main() {
 		// 封包
 		dp := datapack.New()
 
-		data := []byte("hello, this is gozinx from client...")
+		data := []byte("hello, this is golink from client...")
 		msg := &model.Message{
 			MsgID:   0,
 			DataLen: uint32(len(data)),

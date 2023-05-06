@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/marsxingzhi/gozinx/config"
-	"github.com/marsxingzhi/gozinx/model"
+	"github.com/marsxingzhi/golink/config"
+	"github.com/marsxingzhi/golink/model"
 )
 
 // 封包、拆包逻辑
