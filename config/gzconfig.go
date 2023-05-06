@@ -29,12 +29,24 @@ type ServerConfig struct {
 	MaxConn int `yaml:"max_connection"`
 	// 最大数据包
 	MaxPackageSize int32 `yaml:"max_package_size"`
+	// WorkerPool的大小
+	WorkerPoolSize int `yaml:"worker_pool_size"`
+	// 一个消息队列中的最大消息任务数
+	MaxWorkerTaskCapacity int `yaml:"max_worker_task_capacity"`
 }
 
 var GzConfig *Config
 
 func (gc *Config) GetMaxPackageSize() int32 {
 	return gc.Server.MaxPackageSize
+}
+
+func (gc *Config) GetWorkerPoolSize() int {
+	return gc.Server.WorkerPoolSize
+}
+
+func (gc *Config) GetWorkerTaskCapacity() int {
+	return gc.Server.MaxWorkerTaskCapacity
 }
 
 // 初始化配置
@@ -64,12 +76,14 @@ func loadConfig() {
 func defaultConfig() {
 
 	sc := ServerConfig{
-		Name:           "gozinx server app",
-		Host:           "0.0.0.0",
-		Port:           8081,
-		Version:        "0.1",
-		MaxConn:        1000,
-		MaxPackageSize: 1024,
+		Name:                  "gozinx server app",
+		Host:                  "0.0.0.0",
+		Port:                  8081,
+		Version:               "0.1",
+		MaxConn:               1000,
+		MaxPackageSize:        1024,
+		WorkerPoolSize:        10,
+		MaxWorkerTaskCapacity: 1024,
 	}
 
 	GzConfig = &Config{

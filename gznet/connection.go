@@ -184,7 +184,11 @@ func (c *Connection) StartRead() {
 		// c.Router.PreHandle(&req)
 		// c.Router.Handle(&req)
 		// c.Router.PostHandle(&req)
-		go c.MsgHandler.DoHandle(&req) // 可以开个goroutine，将处理request的逻辑go出去，然后继续读新的数据
+
+		// go c.MsgHandler.DoHandle(&req) // 可以开个goroutine，将处理request的逻辑go出去，然后继续读新的数据
+
+		// 这里必须要用go，方法体内只是往消息队列发个消息
+		c.MsgHandler.SendMessageToTaskQueue(&req)
 
 	}
 }

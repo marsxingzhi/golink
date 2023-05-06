@@ -47,6 +47,10 @@ func New(name, ip string, port int) gzinterface.IServer {
 
 func (s *Server) Start() {
 	fmt.Println("server.Start...")
+
+	// 0. 开启工作池
+	s.MsgHandler.StartWorkerPool()
+
 	// 1. 获取TCPAddr
 	tcpAddr, err := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
 	if err != nil {
