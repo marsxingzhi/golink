@@ -16,6 +16,11 @@ type IConnection interface {
 	RemoteAddr() net.Addr
 	// 发送数据
 	SendMessage(msgID uint32, data []byte) error
+
+	// 链接属性
+	SetProperty(key string, value interface{})
+	GetProperity(key string) (interface{}, bool)
+	RemoveProperity(key string)
 }
 
 // 函数类型

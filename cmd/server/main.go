@@ -52,6 +52,15 @@ func (pr *HelloRouter) Handle(req gzinterface.IRequest) {
 	}
 }
 
+func onConnStart(conn gzinterface.IConnection) {
+	fmt.Println("main onConnStart...")
+	// 这里也可以提前发一下消息
+}
+
+func onConnStop(conn gzinterface.IConnection) {
+	fmt.Println("main onConnStop...")
+}
+
 func main() {
 
 	// 初始化配置
@@ -63,6 +72,10 @@ func main() {
 	// 2. 添加router
 	server.AddRouter(0, &PingRouter{})
 	server.AddRouter(1, &HelloRouter{})
+
+	// 注册
+	server.SetOnConnStart(onConnStart)
+	server.SetOnConnStop(onConnStop)
 
 	// 3. 启动server
 	server.Serve()

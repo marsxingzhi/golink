@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/marsxingzhi/gozinx/config"
 	"github.com/marsxingzhi/gozinx/gzinterface"
 	"github.com/marsxingzhi/gozinx/handler"
 )
@@ -21,6 +22,15 @@ type Server struct {
 
 	// Router gzinterface.IRouter
 	MsgHandler handler.IMsghandler
+
+	// 链接管理
+	ConnMgr gzinterface.IConnectionManager
+
+	// hook函数
+	// 链接创建之后
+	OnConnStart func(conn gzinterface.IConnection)
+	// 链接关闭之前
+	OnConnStop func(conn gzinterface.IConnection)
 }
 
 func New(name, ip string, port int) gzinterface.IServer {
@@ -31,6 +41,7 @@ func New(name, ip string, port int) gzinterface.IServer {
 		IP:         ip,
 		Port:       port,
 		MsgHandler: handler.New(),
+		ConnMgr:    NewConnectionManager(),
 	}
 }
 
@@ -78,11 +89,19 @@ func (s *Server) Start() {
 		}
 		fmt.Printf("new connection from %s\n", conn.RemoteAddr())
 
+		fmt.Println("[Server] Len: ", s.ConnMgr.Len(), ", MaxConn: ", config.GzConfig.GetMaxConn())
+		// 判断链接是否超过最大值
+		if s.ConnMgr.Len() >= config.GzConfig.GetMaxConn() {
+			conn.Close()
+			fmt.Println("[Server] too mutch connections...")
+			continue
+		}
+
 		// 4. 从connection中读取客户端传来的数据
 		// @xingzhi 思考为什么处理业务不应该放在这个for循环中，而是另开一个goroutine
 		// go handleConnection(conn)
 
-		c := NewConnection(conn, connID, s.MsgHandler)
+		c := NewConnection(s, conn, connID, s.MsgHandler)
 		connID++
 		go c.Start()
 	}
@@ -110,6 +129,8 @@ func (s *Server) Start() {
 // }
 
 func (s *Server) Stop() {
+	// 清理资源
+	s.ConnMgr.ClearAllConns()
 
 }
 
@@ -122,4 +143,25 @@ func (s *Server) Serve() {
 
 func (s *Server) AddRouter(msgID uint32, r gzinterface.IRouter) {
 	s.MsgHandler.AddRouter(msgID, r)
+}
+
+func (s *Server) GetConnectionManager() gzinterface.IConnectionManager {
+	return s.ConnMgr
+}
+
+func (s *Server) SetOnConnStart(hookFunc func(conn gzinterface.IConnection)) {
+	s.OnConnStart = hookFunc
+}
+func (s *Server) SetOnConnStop(hookFunc func(conn gzinterface.IConnection)) {
+	s.OnConnStop = hookFunc
+}
+func (s *Server) CallOnConnStart(conn gzinterface.IConnection) {
+	if s.OnConnStart != nil {
+		s.OnConnStart(conn)
+	}
+}
+func (s *Server) CallOnConnStop(conn gzinterface.IConnection) {
+	if s.OnConnStop != nil {
+		s.OnConnStop(conn)
+	}
 }

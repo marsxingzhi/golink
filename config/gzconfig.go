@@ -49,20 +49,25 @@ func (gc *Config) GetWorkerTaskCapacity() int {
 	return gc.Server.MaxWorkerTaskCapacity
 }
 
+func (gc *Config) GetMaxConn() int {
+	return gc.Server.MaxConn
+}
+
 // 初始化配置
 func Init() {
 	// 默认配置
 	defaultConfig()
 	// 加载配置
-	// loadConfig()
+	loadConfig()
 }
 
 func loadConfig() {
 	// TODO 先写死
-	bytes, err := ioutil.ReadFile("conf/config.yaml")
+	bytes, err := ioutil.ReadFile("/Users/geyan/codes/gozinx/cmd/server/conf/config.yaml")
 	fmt.Printf("loadConfig data: %s\n", string(bytes))
 
 	if err != nil {
+		fmt.Printf("[gozinx] failed to load config: %+v\n", err)
 		panic("[gozinx] failed to load config")
 	}
 	if err = yaml.Unmarshal(bytes, &GzConfig); err != nil {
@@ -78,7 +83,7 @@ func defaultConfig() {
 	sc := ServerConfig{
 		Name:                  "gozinx server app",
 		Host:                  "0.0.0.0",
-		Port:                  8081,
+		Port:                  80811,
 		Version:               "0.1",
 		MaxConn:               1000,
 		MaxPackageSize:        1024,

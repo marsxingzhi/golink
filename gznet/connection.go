@@ -5,14 +5,20 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"sync"
 
 	"github.com/marsxingzhi/gozinx/datapack"
+	"github.com/marsxingzhi/gozinx/gzinterface"
 	"github.com/marsxingzhi/gozinx/handler"
 	"github.com/marsxingzhi/gozinx/model"
 )
 
 // conn对象
 type Connection struct {
+	// 当前Connection属于哪个Server
+	TcpServer gzinterface.IServer
+
+	// TCP的链接
 	Conn *net.TCPConn
 	// 链接ID
 	ConnID uint32
@@ -27,23 +33,36 @@ type Connection struct {
 
 	// 无缓冲，读写分离，Reader与Writer通信
 	MsgChan chan []byte
+
+	// 链接属性
+	Properity      map[string]interface{}
+	ProperityMutex sync.RWMutex
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, msgHandler handler.IMsghandler) *Connection {
-	return &Connection{
+func NewConnection(server gzinterface.IServer, conn *net.TCPConn, connID uint32, msgHandler handler.IMsghandler) *Connection {
+	c := &Connection{
+		TcpServer:  server,
 		Conn:       conn,
 		ConnID:     connID,
 		IsClose:    false,
 		ExitChan:   make(chan bool, 1),
 		MsgHandler: msgHandler,
 		MsgChan:    make(chan []byte),
+		Properity:  make(map[string]interface{}),
 	}
+
+	// 将Connection添加到ConnMgr中
+	c.TcpServer.GetConnectionManager().Add(c)
+
+	return c
 }
 
 // 需要开启goroutine
 func (c *Connection) Start() {
 	go c.StartRead()
 	go c.StartWrite()
+
+	c.TcpServer.CallOnConnStart(c)
 }
 
 func (c *Connection) Stop() {
@@ -52,6 +71,9 @@ func (c *Connection) Stop() {
 	}
 
 	c.IsClose = true
+	// 在连接关闭之前调用
+	c.TcpServer.CallOnConnStop(c)
+
 	c.Conn.Close()
 
 	c.ExitChan <- true
@@ -59,6 +81,9 @@ func (c *Connection) Stop() {
 	// 回收资源
 	close(c.MsgChan)
 	close(c.ExitChan)
+
+	// 删除链接
+	c.TcpServer.GetConnectionManager().Remove(c)
 }
 
 func (c *Connection) GetConn() *net.TCPConn {
@@ -209,4 +234,25 @@ func (c *Connection) StartWrite() {
 			return
 		}
 	}
+}
+
+func (c *Connection) SetProperty(key string, value interface{}) {
+	c.ProperityMutex.Lock()
+	defer c.ProperityMutex.Unlock()
+	c.Properity[key] = value
+}
+func (c *Connection) GetProperity(key string) (interface{}, bool) {
+	c.ProperityMutex.RLock()
+	defer c.ProperityMutex.RUnlock()
+
+	if val, ok := c.Properity[key]; ok {
+		return val, true
+	} else {
+		return nil, false
+	}
+}
+func (c *Connection) RemoveProperity(key string) {
+	c.ProperityMutex.Lock()
+	defer c.ProperityMutex.Unlock()
+	delete(c.Properity, key)
 }
