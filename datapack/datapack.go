@@ -76,7 +76,7 @@ func (dp *DataPack) UnPack(b []byte) (*model.Message, error) {
 	}
 
 	// 2. 判断dataLen的长度是否超过最大允许的包大小
-	if config.GzConfig.GetMaxPackageSize() > 0 && config.GzConfig.GetMaxPackageSize() < int32(msg.DataLen) {
+	if config.Config.GetMaxPackageSize() > 0 && config.Config.GetMaxPackageSize() < int32(msg.DataLen) {
 		fmt.Printf("[DataPack] UnPack | dataLen too large\n")
 		return nil, errors.New("msg received is too large")
 	}

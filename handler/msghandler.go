@@ -30,8 +30,8 @@ type MsgHandler struct {
 func New() *MsgHandler {
 	return &MsgHandler{
 		Apis:           make(map[uint32]gzinterface.IRouter),
-		TaskQueue:      make([]chan gzinterface.IRequest, config.GzConfig.GetWorkerPoolSize()),
-		WorkerPoolSize: config.GzConfig.GetWorkerPoolSize(),
+		TaskQueue:      make([]chan gzinterface.IRequest, config.Config.GetWorkerPoolSize()),
+		WorkerPoolSize: config.Config.GetWorkerPoolSize(),
 	}
 }
 
@@ -63,7 +63,7 @@ func (h *MsgHandler) StartWorkerPool() {
 
 	for i := 0; i < h.WorkerPoolSize; i++ {
 		// 肯定是有缓冲的channel
-		h.TaskQueue[i] = make(chan gzinterface.IRequest, config.GzConfig.GetWorkerTaskCapacity())
+		h.TaskQueue[i] = make(chan gzinterface.IRequest, config.Config.GetWorkerTaskCapacity())
 
 		go h.StartWorker(i, h.TaskQueue[i])
 	}

@@ -2,7 +2,7 @@ server:
   name: golink server application by yaml
   host: 127.0.0.1
   port: 8081
-  max_connection: 1
+  max_connection: 10    # 最大连接数
   max_package_size: 1026
   version: 0.3
   worker_pool_size: 10

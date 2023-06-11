@@ -89,9 +89,9 @@ func (s *Server) Start() {
 		}
 		fmt.Printf("new connection from %s\n", conn.RemoteAddr())
 
-		fmt.Println("[Server] Len: ", s.ConnMgr.Len(), ", MaxConn: ", config.GzConfig.GetMaxConn())
+		fmt.Println("[Server] Len: ", s.ConnMgr.Len(), ", MaxConn: ", config.Config.GetMaxConn())
 		// 判断链接是否超过最大值
-		if s.ConnMgr.Len() >= config.GzConfig.GetMaxConn() {
+		if s.ConnMgr.Len() >= config.Config.GetMaxConn() {
 			conn.Close()
 			fmt.Println("[Server] too mutch connections...")
 			continue

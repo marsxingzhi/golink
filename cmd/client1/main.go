@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/marsxingzhi/golink/config"
 	"io"
 	"net"
 	"time"
 
-	"github.com/marsxingzhi/golink/config"
 	"github.com/marsxingzhi/golink/datapack"
 	"github.com/marsxingzhi/golink/model"
 )
@@ -14,6 +14,7 @@ import (
 func main() {
 	fmt.Println("[Client1] start")
 
+	// TODO-xz client和server公用一个config，感觉这个不合理
 	config.Init()
 
 	time.Sleep(1 * time.Second)

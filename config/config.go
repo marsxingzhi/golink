@@ -8,11 +8,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	Server ServerConfig `yaml: server`
+type XzConfig struct {
+	Server ServerConfig `yaml:"XzConfig"`
 }
 
-// 全局配置
+// ServerConfig 全局配置
 type ServerConfig struct {
 	// 当前服务器名称
 	Name string `yaml:"name"`
@@ -23,7 +23,7 @@ type ServerConfig struct {
 	// 端口号
 	Port int `yaml:"port"`
 
-	// golink框架的版本号
+	// xzlink框架的版本号
 	Version string `yaml:"version"`
 	// 最大连接数
 	MaxConn int `yaml:"max_connection"`
@@ -35,25 +35,25 @@ type ServerConfig struct {
 	MaxWorkerTaskCapacity int `yaml:"max_worker_task_capacity"`
 }
 
-var GzConfig *Config
+var Config *XzConfig
 
-func (gc *Config) GetMaxPackageSize() int32 {
+func (gc *XzConfig) GetMaxPackageSize() int32 {
 	return gc.Server.MaxPackageSize
 }
 
-func (gc *Config) GetWorkerPoolSize() int {
+func (gc *XzConfig) GetWorkerPoolSize() int {
 	return gc.Server.WorkerPoolSize
 }
 
-func (gc *Config) GetWorkerTaskCapacity() int {
+func (gc *XzConfig) GetWorkerTaskCapacity() int {
 	return gc.Server.MaxWorkerTaskCapacity
 }
 
-func (gc *Config) GetMaxConn() int {
+func (gc *XzConfig) GetMaxConn() int {
 	return gc.Server.MaxConn
 }
 
-// 初始化配置
+// Init 初始化配置
 func Init() {
 	// 默认配置
 	defaultConfig()
@@ -63,19 +63,19 @@ func Init() {
 
 func loadConfig() {
 	// TODO 先写死
-	bytes, err := ioutil.ReadFile("/Users/geyan/codes/golink/cmd/server/conf/config.yaml")
+	bytes, err := ioutil.ReadFile("/Users/geyan/go/src/xzlink/cmd/server/conf/config.yaml")
 	fmt.Printf("loadConfig data: %s\n", string(bytes))
 
 	if err != nil {
 		fmt.Printf("[golink] failed to load config: %+v\n", err)
 		panic("[golink] failed to load config")
 	}
-	if err = yaml.Unmarshal(bytes, &GzConfig); err != nil {
+	if err = yaml.Unmarshal(bytes, &Config); err != nil {
 		fmt.Printf("[golink] failed to unmarshal gzinx.json: %+v\n", err)
 		panic("[golink] failed to unmarshal gzinx.json")
 	}
 
-	fmt.Printf("[golink] load config success, and config: %+v\n", GzConfig)
+	fmt.Printf("[golink] load config success, and config: %+v\n", Config)
 }
 
 func defaultConfig() {
@@ -91,7 +91,7 @@ func defaultConfig() {
 		MaxWorkerTaskCapacity: 1024,
 	}
 
-	GzConfig = &Config{
+	Config = &XzConfig{
 		Server: sc,
 	}
 }
