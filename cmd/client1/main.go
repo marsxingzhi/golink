@@ -2,20 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/marsxingzhi/golink/config"
+	"github.com/marsxingzhi/xzlink/pkg/config"
 	"io"
 	"net"
 	"time"
 
-	"github.com/marsxingzhi/golink/datapack"
-	"github.com/marsxingzhi/golink/model"
+	"github.com/marsxingzhi/xzlink/datapack"
+	"github.com/marsxingzhi/xzlink/model"
 )
 
 func main() {
 	fmt.Println("[Client1] start")
 
-	// TODO-xz client和server公用一个config，感觉这个不合理
-	config.Init()
+	configPath := "/Users/geyan/go/src/xzlink/cmd/client1/config.yaml"
+	config.Init(configPath)
 
 	time.Sleep(1 * time.Second)
 
@@ -27,28 +27,10 @@ func main() {
 
 	// id := 0
 	for {
-		// msg := []byte("hi, this is golink...")
-		// msg := []byte(fmt.Sprintf("hi %v, this is golink", id))
-		// id++
-
-		// _, err := conn.Write(msg)
-		// if err != nil {
-		// 	fmt.Println("[Client] failed to write msg: ", err)
-		// 	return
-		// }
-
-		// buf := make([]byte, 1024)
-		// _, err = conn.Read(buf)
-		// if err != nil {
-		// 	fmt.Println("[Client] failed to read msg: ", err)
-		// 	return
-		// }
-		// fmt.Println("[Client] receive msg from server: ", string(buf))
-
 		// 封包
 		dp := datapack.New()
 
-		data := []byte("hello, this is golink from client1...")
+		data := []byte("hello, this is xzlink from client1...")
 		msg := &model.Message{
 			MsgID:   1,
 			DataLen: uint32(len(data)),

@@ -1,19 +1,19 @@
 package gznet
 
 import (
-	"github.com/marsxingzhi/golink/gzinterface"
-	"github.com/marsxingzhi/golink/model"
+	"github.com/marsxingzhi/xzlink/model"
+	conn "github.com/marsxingzhi/xzlink/pkg/connection"
 )
 
 // 链接与数据的封装
 type Request struct {
-	Conn gzinterface.IConnection
+	Conn conn.IConnection
 	// Data []byte
 	// 将Data封装到Message中
 	Msg *model.Message
 }
 
-func (req *Request) GetConnection() gzinterface.IConnection {
+func (req *Request) GetConnection() conn.IConnection {
 	return req.Conn
 }
 

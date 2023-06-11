@@ -2,9 +2,9 @@ package config
 
 import (
 	"fmt"
+	"github.com/marsxingzhi/xzlink/pkg/server"
 	"io/ioutil"
 
-	"github.com/marsxingzhi/golink/gzinterface"
 	"gopkg.in/yaml.v3"
 )
 
@@ -17,7 +17,7 @@ type ServerConfig struct {
 	// 当前服务器名称
 	Name string `yaml:"name"`
 	// 当前全局的server对象
-	TcpServer gzinterface.IServer
+	TcpServer server.IServer
 	// 主机ip
 	Host string `yaml:"host"`
 	// 端口号
@@ -54,34 +54,33 @@ func (gc *XzConfig) GetMaxConn() int {
 }
 
 // Init 初始化配置
-func Init() {
+func Init(path string) {
 	// 默认配置
 	defaultConfig()
 	// 加载配置
-	loadConfig()
+	loadConfig(path)
 }
 
-func loadConfig() {
-	// TODO 先写死
-	bytes, err := ioutil.ReadFile("/Users/geyan/go/src/xzlink/cmd/server/conf/config.yaml")
+func loadConfig(path string) {
+	bytes, err := ioutil.ReadFile(path)
 	fmt.Printf("loadConfig data: %s\n", string(bytes))
 
 	if err != nil {
-		fmt.Printf("[golink] failed to load config: %+v\n", err)
-		panic("[golink] failed to load config")
+		fmt.Printf("[xzlink] failed to load config: %+v\n", err)
+		panic("[xzlink] failed to load config")
 	}
 	if err = yaml.Unmarshal(bytes, &Config); err != nil {
-		fmt.Printf("[golink] failed to unmarshal gzinx.json: %+v\n", err)
-		panic("[golink] failed to unmarshal gzinx.json")
+		fmt.Printf("[xzlink] failed to unmarshal gzinx.json: %+v\n", err)
+		panic("[xzlink] failed to unmarshal xzlink.yaml")
 	}
 
-	fmt.Printf("[golink] load config success, and config: %+v\n", Config)
+	fmt.Printf("[xzlink] load config success, and config: %+v\n", Config)
 }
 
 func defaultConfig() {
 
 	sc := ServerConfig{
-		Name:                  "golink server app",
+		Name:                  "xzlink server app",
 		Host:                  "0.0.0.0",
 		Port:                  80811,
 		Version:               "0.1",

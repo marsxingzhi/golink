@@ -1,4 +1,4 @@
-package gzinterface
+package connection
 
 import "net"
 

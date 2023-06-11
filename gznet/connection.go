@@ -3,20 +3,20 @@ package gznet
 import (
 	"errors"
 	"fmt"
+	"github.com/marsxingzhi/xzlink/pkg/msg_handler"
+	"github.com/marsxingzhi/xzlink/pkg/server"
 	"io"
 	"net"
 	"sync"
 
-	"github.com/marsxingzhi/golink/datapack"
-	"github.com/marsxingzhi/golink/gzinterface"
-	"github.com/marsxingzhi/golink/handler"
-	"github.com/marsxingzhi/golink/model"
+	"github.com/marsxingzhi/xzlink/datapack"
+	"github.com/marsxingzhi/xzlink/model"
 )
 
 // conn对象
 type Connection struct {
 	// 当前Connection属于哪个Server
-	TcpServer gzinterface.IServer
+	TcpServer server.IServer
 
 	// TCP的链接
 	Conn *net.TCPConn
@@ -29,7 +29,7 @@ type Connection struct {
 	// 等待链接退出的channel
 	ExitChan chan bool
 
-	MsgHandler handler.IMsghandler
+	MsgHandler msg_handler.IMsgHandler
 
 	// 无缓冲，读写分离，Reader与Writer通信
 	MsgChan chan []byte
@@ -39,7 +39,7 @@ type Connection struct {
 	ProperityMutex sync.RWMutex
 }
 
-func NewConnection(server gzinterface.IServer, conn *net.TCPConn, connID uint32, msgHandler handler.IMsghandler) *Connection {
+func NewConnection(server server.IServer, conn *net.TCPConn, connID uint32, msgHandler msg_handler.IMsgHandler) *Connection {
 	c := &Connection{
 		TcpServer:  server,
 		Conn:       conn,

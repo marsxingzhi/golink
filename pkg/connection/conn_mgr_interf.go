@@ -1,4 +1,4 @@
-package gzinterface
+package connection
 
 // 链接管理模块的接口
 type IConnectionManager interface {

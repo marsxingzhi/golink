@@ -2,11 +2,12 @@ package gznet
 
 import (
 	"fmt"
+	"github.com/marsxingzhi/xzlink/pkg/config"
+	conn "github.com/marsxingzhi/xzlink/pkg/connection"
+	"github.com/marsxingzhi/xzlink/pkg/msg_handler"
+	"github.com/marsxingzhi/xzlink/pkg/router"
+	"github.com/marsxingzhi/xzlink/pkg/server"
 	"net"
-
-	"github.com/marsxingzhi/golink/config"
-	"github.com/marsxingzhi/golink/gzinterface"
-	"github.com/marsxingzhi/golink/handler"
 )
 
 // IServer接口的实现
@@ -21,40 +22,29 @@ type Server struct {
 	Port int
 
 	// Router gzinterface.IRouter
-	MsgHandler handler.IMsghandler
+	MsgHandler msg_handler.IMsgHandler
 
 	// 链接管理
-	ConnMgr gzinterface.IConnectionManager
+	ConnMgr conn.IConnectionManager
 
 	// hook函数
 	// 链接创建之后
-	OnConnStart func(conn gzinterface.IConnection)
+	OnConnStart func(conn conn.IConnection)
 	// 链接关闭之前
-	OnConnStop func(conn gzinterface.IConnection)
+	OnConnStop func(conn conn.IConnection)
 }
 
-func New(name, ip string, port int) gzinterface.IServer {
+func New(name, ip string, port int) server.IServer {
 	fmt.Println("server.New...")
 	return &Server{
 		Name:       name,
 		IPVersion:  "tcp4",
 		IP:         ip,
 		Port:       port,
-		MsgHandler: handler.New(),
+		MsgHandler: msg_handler.New(),
 		ConnMgr:    NewConnectionManager(),
 	}
 }
-
-// 由于使用了Router，处理逻辑交给Router
-// var handle gzinterface.HandleFunc = func(tcpConn *net.TCPConn, buf []byte, cnt int) error {
-// 	newBuf := buf[:cnt]
-// 	newBuf = append(newBuf, ", and back from server"...)
-// 	_, err := tcpConn.Write(newBuf)
-// 	if err != nil {
-// 		fmt.Println("failed to write back to connection: ", err)
-// 	}
-// 	return err
-// }
 
 func (s *Server) Start() {
 	fmt.Println("server.Start...")
@@ -75,7 +65,7 @@ func (s *Server) Start() {
 		return
 	}
 
-	fmt.Printf("start golink server %s success, and now listenning...\n", s.Name)
+	fmt.Printf("start xzlink server %s success, and now listenning...\n", s.Name)
 
 	var connID uint32 = 0
 
@@ -108,26 +98,6 @@ func (s *Server) Start() {
 
 }
 
-// 迁移到Connection中
-// func handleConnection(conn *net.TCPConn) {
-// 	defer conn.Close()
-// 	buf := make([]byte, 1024)
-// 	cnt, err := conn.Read(buf)
-// 	if err != nil {
-// 		fmt.Println("[server] failed to read from connection: ", err)
-// 		return
-// 	}
-
-// 	fmt.Printf("[server] read data from connection: %s\n", string(buf))
-
-// 	// test 回写到端上
-// 	_, err = conn.Write(buf[:cnt])
-// 	if err != nil {
-// 		fmt.Println("[server] failed to write back to connection: ", err)
-// 		return
-// 	}
-// }
-
 func (s *Server) Stop() {
 	// 清理资源
 	s.ConnMgr.ClearAllConns()
@@ -141,26 +111,26 @@ func (s *Server) Serve() {
 	select {}
 }
 
-func (s *Server) AddRouter(msgID uint32, r gzinterface.IRouter) {
+func (s *Server) AddRouter(msgID uint32, r router.IRouter) {
 	s.MsgHandler.AddRouter(msgID, r)
 }
 
-func (s *Server) GetConnectionManager() gzinterface.IConnectionManager {
+func (s *Server) GetConnectionManager() conn.IConnectionManager {
 	return s.ConnMgr
 }
 
-func (s *Server) SetOnConnStart(hookFunc func(conn gzinterface.IConnection)) {
+func (s *Server) SetOnConnStart(hookFunc func(conn conn.IConnection)) {
 	s.OnConnStart = hookFunc
 }
-func (s *Server) SetOnConnStop(hookFunc func(conn gzinterface.IConnection)) {
+func (s *Server) SetOnConnStop(hookFunc func(conn conn.IConnection)) {
 	s.OnConnStop = hookFunc
 }
-func (s *Server) CallOnConnStart(conn gzinterface.IConnection) {
+func (s *Server) CallOnConnStart(conn conn.IConnection) {
 	if s.OnConnStart != nil {
 		s.OnConnStart(conn)
 	}
 }
-func (s *Server) CallOnConnStop(conn gzinterface.IConnection) {
+func (s *Server) CallOnConnStop(conn conn.IConnection) {
 	if s.OnConnStop != nil {
 		s.OnConnStop(conn)
 	}

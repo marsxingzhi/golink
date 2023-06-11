@@ -1,18 +1,20 @@
 package gznet
 
-import "github.com/marsxingzhi/golink/gzinterface"
+import (
+	"github.com/marsxingzhi/xzlink/pkg/request"
+)
 
 type BaseRouter struct {
 }
 
-func (br *BaseRouter) PreHandle(req gzinterface.IRequest) {
+func (br *BaseRouter) PreHandle(req request.IRequest) {
 
 }
 
-func (br *BaseRouter) Handle(req gzinterface.IRequest) {
+func (br *BaseRouter) Handle(req request.IRequest) {
 
 }
 
-func (br *BaseRouter) PostHandle(req gzinterface.IRequest) {
+func (br *BaseRouter) PostHandle(req request.IRequest) {
 
 }

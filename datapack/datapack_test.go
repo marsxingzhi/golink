@@ -2,16 +2,16 @@ package datapack
 
 import (
 	"fmt"
+	"github.com/marsxingzhi/xzlink/pkg/config"
 	"io"
 	"net"
 	"testing"
 
-	"github.com/marsxingzhi/golink/config"
-	"github.com/marsxingzhi/golink/model"
+	"github.com/marsxingzhi/xzlink/model"
 )
 
 func TestDataPack(t *testing.T) {
-	config.Init()
+	config.Init("/Users/geyan/go/src/xzlink/configs/config.yaml")
 
 	listener, err := net.Listen("tcp", "127.0.0.1:8100")
 	if err != nil {

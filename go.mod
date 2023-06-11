@@ -1,4 +1,4 @@
-module github.com/marsxingzhi/golink
+module github.com/marsxingzhi/xzlink
 
 go 1.18
 

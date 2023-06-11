@@ -2,24 +2,23 @@ package gznet
 
 import (
 	"fmt"
+	conn "github.com/marsxingzhi/xzlink/pkg/connection"
 	"sync"
-
-	"github.com/marsxingzhi/golink/gzinterface"
 )
 
 type ConnectionManager struct {
-	conns map[uint32]gzinterface.IConnection
+	conns map[uint32]conn.IConnection
 	mutex sync.RWMutex
 }
 
 func NewConnectionManager() *ConnectionManager {
 	return &ConnectionManager{
-		conns: make(map[uint32]gzinterface.IConnection),
+		conns: make(map[uint32]conn.IConnection),
 	}
 }
 
 // 添加链接
-func (connMgr *ConnectionManager) Add(conn gzinterface.IConnection) {
+func (connMgr *ConnectionManager) Add(conn conn.IConnection) {
 	connMgr.mutex.Lock()
 	defer connMgr.mutex.Unlock()
 
@@ -29,7 +28,7 @@ func (connMgr *ConnectionManager) Add(conn gzinterface.IConnection) {
 }
 
 // 删除链接
-func (connMgr *ConnectionManager) Remove(conn gzinterface.IConnection) {
+func (connMgr *ConnectionManager) Remove(conn conn.IConnection) {
 	connMgr.mutex.Lock()
 	defer connMgr.mutex.Unlock()
 
@@ -38,7 +37,7 @@ func (connMgr *ConnectionManager) Remove(conn gzinterface.IConnection) {
 }
 
 // 获取链接
-func (connMgr *ConnectionManager) Get(connID uint32) (gzinterface.IConnection, bool) {
+func (connMgr *ConnectionManager) Get(connID uint32) (conn.IConnection, bool) {
 	// 读锁
 	connMgr.mutex.RLock()
 	defer connMgr.mutex.RUnlock()

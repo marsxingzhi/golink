@@ -5,9 +5,9 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/marsxingzhi/xzlink/pkg/config"
 
-	"github.com/marsxingzhi/golink/config"
-	"github.com/marsxingzhi/golink/model"
+	"github.com/marsxingzhi/xzlink/model"
 )
 
 // 封包、拆包逻辑
