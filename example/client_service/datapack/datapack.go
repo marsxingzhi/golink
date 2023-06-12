@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/marsxingzhi/xzlink/pkg/config"
+	clientConfig "github.com/marsxingzhi/xzlink/example/client_service/config"
 	"github.com/marsxingzhi/xzlink/pkg/model"
 )
 
@@ -66,7 +66,7 @@ func (dp *DataPack) UnPack(b []byte) (*model.Message, error) {
 	}
 
 	// 2. 判断dataLen的长度是否超过最大允许的包大小
-	if config.Config.GetMaxPackageSize() > 0 && config.Config.GetMaxPackageSize() < int32(msg.DataLen) {
+	if clientConfig.Config.GetMaxPackageSize() > 0 && clientConfig.Config.GetMaxPackageSize() < int32(msg.DataLen) {
 		fmt.Printf("[DataPack] UnPack | dataLen too large\n")
 		return nil, errors.New("msg received is too large")
 	}

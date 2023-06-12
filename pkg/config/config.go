@@ -9,7 +9,7 @@ import (
 )
 
 type XzConfig struct {
-	Server ServerConfig `yaml:"XzConfig"`
+	Server ServerConfig `yaml:"server"`
 }
 
 // ServerConfig 全局配置
@@ -70,17 +70,17 @@ func loadConfig(path string) {
 		panic("[xzlink] failed to load config")
 	}
 	if err = yaml.Unmarshal(bytes, &Config); err != nil {
-		fmt.Printf("[xzlink] failed to unmarshal gzinx.json: %+v\n", err)
+		fmt.Printf("[xzlink] failed to unmarshal xzlink.yaml: %+v\n", err)
 		panic("[xzlink] failed to unmarshal xzlink.yaml")
 	}
 
-	fmt.Printf("[xzlink] load config success, and config: %+v\n", Config)
+	fmt.Printf("[xzlink] load server config success, and config: %+v\n", Config)
 }
 
 func defaultConfig() {
 
 	sc := ServerConfig{
-		Name:                  "xzlink server app",
+		Name:                  "default xzlink server app",
 		Host:                  "0.0.0.0",
 		Port:                  80811,
 		Version:               "0.1",

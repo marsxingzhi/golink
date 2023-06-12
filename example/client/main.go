@@ -2,20 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/marsxingzhi/xzlink/pkg/config"
+	clientConfig "github.com/marsxingzhi/xzlink/example/client_service/config"
+	clientDataPack "github.com/marsxingzhi/xzlink/example/client_service/datapack"
 	"github.com/marsxingzhi/xzlink/pkg/model"
 	"io"
 	"net"
 	"time"
-
-	"github.com/marsxingzhi/xzlink/datapack"
 )
 
 func main() {
 	fmt.Println("[Client] start")
 
-	configPath := "/Users/geyan/go/src/xzlink/cmd/client/config.yaml"
-	config.Init(configPath)
+	clientConfig.Init("/Users/geyan/go/src/xzlink/example/client_service/config.yaml")
 
 	time.Sleep(1 * time.Second)
 
@@ -46,7 +44,7 @@ func main() {
 		// fmt.Println("[Client] receive msg from server: ", string(buf))
 
 		// 封包
-		dp := datapack.New()
+		dp := clientDataPack.New()
 
 		data := []byte("hello, this is xzlink from client...")
 		msg := &model.Message{

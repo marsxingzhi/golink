@@ -13,7 +13,7 @@ import (
 	"github.com/marsxingzhi/xzlink/datapack"
 )
 
-// conn对象
+// Connection conn对象
 type Connection struct {
 	// 当前Connection属于哪个Server
 	TcpServer server.IServer

@@ -10,7 +10,7 @@ import (
 	"net"
 )
 
-// IServer接口的实现
+// Server IServer接口的实现
 type Server struct {
 	// 服务器名称
 	Name string
@@ -21,7 +21,6 @@ type Server struct {
 	// 服务器绑定的端口
 	Port int
 
-	// Router gzinterface.IRouter
 	MsgHandler msg_handler.IMsgHandler
 
 	// 链接管理

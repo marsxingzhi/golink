@@ -1,5 +1,5 @@
 server:
-  name: xzlink server application by yaml
+  name: xzlink server app online
   host: 127.0.0.1
   port: 8081
   max_connection: 10    # 最大连接数

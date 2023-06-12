@@ -5,7 +5,7 @@ import (
 	"github.com/marsxingzhi/xzlink/pkg/model"
 )
 
-// 链接与数据的封装
+// Request 链接与数据的封装
 type Request struct {
 	Conn conn.IConnection
 	// Data []byte

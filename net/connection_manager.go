@@ -17,7 +17,7 @@ func NewConnectionManager() *ConnectionManager {
 	}
 }
 
-// 添加链接
+// Add 添加链接
 func (connMgr *ConnectionManager) Add(conn conn.IConnection) {
 	connMgr.mutex.Lock()
 	defer connMgr.mutex.Unlock()
@@ -27,7 +27,7 @@ func (connMgr *ConnectionManager) Add(conn conn.IConnection) {
 	fmt.Printf("[ConnectionManager] Add connID = :%v successfully, and now connection total num: %v\n", conn.GetConnID(), connMgr.Len())
 }
 
-// 删除链接
+// Remove 删除链接
 func (connMgr *ConnectionManager) Remove(conn conn.IConnection) {
 	connMgr.mutex.Lock()
 	defer connMgr.mutex.Unlock()
@@ -36,7 +36,7 @@ func (connMgr *ConnectionManager) Remove(conn conn.IConnection) {
 	fmt.Printf("[ConnectionManager] Remove connID: %v successfully, and now connection total num: %v\n", conn.GetConnID(), connMgr.Len())
 }
 
-// 获取链接
+// Get 获取链接
 func (connMgr *ConnectionManager) Get(connID uint32) (conn.IConnection, bool) {
 	// 读锁
 	connMgr.mutex.RLock()
@@ -46,12 +46,12 @@ func (connMgr *ConnectionManager) Get(connID uint32) (conn.IConnection, bool) {
 	return conn, ok
 }
 
-// 链接个数
+// Len 链接个数
 func (connMgr *ConnectionManager) Len() int {
 	return len(connMgr.conns)
 }
 
-// 清理所有链接
+// ClearAllConns 清理所有链接
 func (connMgr *ConnectionManager) ClearAllConns() {
 	connMgr.mutex.Lock()
 	defer connMgr.mutex.Unlock()
