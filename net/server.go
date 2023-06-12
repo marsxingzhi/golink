@@ -1,4 +1,4 @@
-package gznet
+package net
 
 import (
 	"fmt"
@@ -34,7 +34,7 @@ type Server struct {
 	OnConnStop func(conn conn.IConnection)
 }
 
-func New(name, ip string, port int) server.IServer {
+func NewServer(name, ip string, port int) server.IServer {
 	fmt.Println("server.New...")
 	return &Server{
 		Name:       name,

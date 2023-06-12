@@ -2,12 +2,12 @@ package router
 
 import (
 	"fmt"
-	"github.com/marsxingzhi/xzlink/gznet"
+	"github.com/marsxingzhi/xzlink/net"
 	"github.com/marsxingzhi/xzlink/pkg/request"
 )
 
 type HelloRouter struct {
-	gznet.BaseRouter
+	net.BaseRouter
 }
 
 func (pr *HelloRouter) Handle(req request.IRequest) {

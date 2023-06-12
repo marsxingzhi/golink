@@ -1,4 +1,4 @@
-package gznet
+package net
 
 import (
 	"github.com/marsxingzhi/xzlink/pkg/request"

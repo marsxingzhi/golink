@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/marsxingzhi/xzlink/cmd/server/router"
-	"github.com/marsxingzhi/xzlink/gznet"
+	"github.com/marsxingzhi/xzlink/net"
 	"github.com/marsxingzhi/xzlink/pkg/config"
 	conn "github.com/marsxingzhi/xzlink/pkg/connection"
 )
@@ -24,7 +24,7 @@ func main() {
 	config.Init(configPath)
 
 	// 1. 创建server
-	server := gznet.New("t1", "127.0.0.1", 8081)
+	server := net.NewServer("t1", "127.0.0.1", 8081)
 
 	// 2. 添加router
 	server.AddRouter(0, &router.PingRouter{})

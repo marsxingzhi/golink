@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/marsxingzhi/xzlink/pkg/config"
+	"github.com/marsxingzhi/xzlink/pkg/model"
 	"io"
 	"net"
 	"time"
 
 	"github.com/marsxingzhi/xzlink/datapack"
-	"github.com/marsxingzhi/xzlink/model"
 )
 
 func main() {

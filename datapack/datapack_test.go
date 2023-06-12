@@ -3,11 +3,10 @@ package datapack
 import (
 	"fmt"
 	"github.com/marsxingzhi/xzlink/pkg/config"
+	"github.com/marsxingzhi/xzlink/pkg/model"
 	"io"
 	"net"
 	"testing"
-
-	"github.com/marsxingzhi/xzlink/model"
 )
 
 func TestDataPack(t *testing.T) {

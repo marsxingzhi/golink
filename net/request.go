@@ -1,8 +1,8 @@
-package gznet
+package net
 
 import (
-	"github.com/marsxingzhi/xzlink/model"
 	conn "github.com/marsxingzhi/xzlink/pkg/connection"
+	"github.com/marsxingzhi/xzlink/pkg/model"
 )
 
 // 链接与数据的封装

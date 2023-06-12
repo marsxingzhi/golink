@@ -1,8 +1,9 @@
-package gznet
+package net
 
 import (
 	"errors"
 	"fmt"
+	"github.com/marsxingzhi/xzlink/pkg/model"
 	"github.com/marsxingzhi/xzlink/pkg/msg_handler"
 	"github.com/marsxingzhi/xzlink/pkg/server"
 	"io"
@@ -10,7 +11,6 @@ import (
 	"sync"
 
 	"github.com/marsxingzhi/xzlink/datapack"
-	"github.com/marsxingzhi/xzlink/model"
 )
 
 // conn对象

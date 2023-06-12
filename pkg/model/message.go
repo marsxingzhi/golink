@@ -1,6 +1,6 @@
 package model
 
-// 定义消息结构
+// Message 定义消息结构
 type Message struct {
 	// 消息id
 	MsgID uint32

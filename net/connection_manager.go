@@ -1,4 +1,4 @@
-package gznet
+package net
 
 import (
 	"fmt"

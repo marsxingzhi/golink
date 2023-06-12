@@ -6,8 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/marsxingzhi/xzlink/pkg/config"
-
-	"github.com/marsxingzhi/xzlink/model"
+	"github.com/marsxingzhi/xzlink/pkg/model"
 )
 
 // 封包、拆包逻辑
